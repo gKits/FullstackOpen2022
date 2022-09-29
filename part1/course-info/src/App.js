@@ -1,27 +1,32 @@
 const App = () => {
-  const course = 'Half Stack application development'
-  const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
+  const course = {
+    name: 'Half Stack application development',
+    parts: [
+      {
+        name: 'Fundamentals of React',
+        exercises: 10
+      },
+      {
+        name: 'Using props to pass data',
+        exercises: 7
+      },
+      {
+        name: 'State of a component',
+        exercises: 14
+      }
+    ]
+  }
 
-  console.log('Rendering App')
   return (
     <div>
-      <Header course={course}/>
-      <Content exercises1={exercises1} part1={part1}
-             exercises2={exercises2} part2={part2}
-             exercises3={exercises3} part3={part3}
-      />
-      <Total exercises1={exercises1} exercises2={exercises2} exercises3={exercises3}/>
+      <Header course={course.name}/>
+      <Content parts={course.parts}/>
+      <Total parts={course.parts}/>
     </div>
   )
 }
 
 const Header = (props) => {
-  console.log('Rendering Header')
   return (
     <div>
       <h1>{props.course}</h1>
@@ -30,30 +35,29 @@ const Header = (props) => {
 }
 
 const Content = (props) => {
-  console.log('Rendering Content')
   return (
     <div>
-      <Part part={props.part1} exercises={props.exercises1}/>
-      <Part part={props.part2} exercises={props.exercises2}/>
-      <Part part={props.part3} exercises={props.exercises3}/>
+      {props.parts.map((part, index) => (
+        <Part name={part.name} exercises={part.exercises} key={index}/>
+      ))}
     </div>
   )
 }
 
 const Part = (props) => {
-  console.log('Rendering Part')
   return (
     <div>
-      <p>{props.part} {props.exercises}</p>
+      <p>{props.name} {props.exercises}</p>
     </div>
   )
 }
 
 const Total = (props) => {
-  console.log('Rendering Total')
+  const exercisesList = []
+  props.parts.forEach(part => exercisesList.push(part.exercises))
   return (
     <div>
-      <p>Number of exercises {props.exercises1 + props.exercises2 + props.exercises3}</p>
+      <p>Number of exercises {exercisesList.reduce((pV, cV) => pV + cV, 0)}</p>
     </div>
   )
 }
