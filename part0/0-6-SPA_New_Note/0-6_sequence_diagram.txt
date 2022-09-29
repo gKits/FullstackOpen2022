@@ -1,0 +1,13 @@
+note over browser
+Browser runs JS code to create new note
+Then rerenders the page
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server
+Server creates new note so new note still there
+after next GET Request
+end note
+
+server->browser: {message: "note created"}
