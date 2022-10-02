@@ -1,0 +1,17 @@
+import React from "react"
+import Header from './Header'
+import Content from './Content'
+import Total from "./Total"
+
+const Course = ({ course }) => {
+    const total = course.parts.map(part => part.exercises).reduce((pV, cV) => pV + cV, 0)
+    return (
+      <div>
+        <Header course={course.name}/>
+        <Content parts={course.parts}/>
+        <Total sum={total}/>
+      </div>
+    )
+  }
+
+export default Course
