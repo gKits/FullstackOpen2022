@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
+
 import Phonebook from './components/Phonebook'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
@@ -12,18 +13,16 @@ const App = () => {
   const [showAll, setShowAll] = useState(true)
 
   const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-        console.log(response.data)
-      })
+    personService
+    .getAll()
+    .then(response => {
+      setPersons(response.data)
+    })
   }
 
   useEffect(hook, [])
 
-  const addPerson= (event) => {
+  const addPerson = (event) => {
     event.preventDefault()
     const personObject = {
       name: newName,
@@ -31,13 +30,35 @@ const App = () => {
       id: persons.length + 1
     }
     if (persons.find(person => person.name === personObject.name) === undefined){
-      setPersons(persons.concat(personObject))
+      personService
+      .create(personObject)
+      .then(response => {
+        setPersons(persons.concat(personObject))
+        console.log(response)
+      })
     }
     else {
       alert(`${personObject.name} is already in the phonebook`)
     }
     setNewName('')
     setNewNumber('')
+  }
+
+  const removePerson = (person) => {
+    console.log(person)
+    if (window.confirm(`Do you really want to delete ${person.name}`)) {
+      personService
+      .remove(person.id)
+      .then(response => {
+        const copy = [...persons]
+        const index = copy.indexOf(copy.find(p => p.id === person.id))
+        if (index > -1) {
+          copy.splice(index, 1)
+          setPersons(copy)
+        }
+        console.log(response)
+      })
+    }
   }
 
   const toShow = showAll
@@ -72,7 +93,7 @@ const App = () => {
         numberInput={newNumber} numberInputHandler={handleNumberInput}
       />
       <h2>Numbers</h2>
-      <Phonebook phonebook={toShow}/>
+      <Phonebook phonebook={toShow} remove={removePerson}/>
     </div>
   )
 }
