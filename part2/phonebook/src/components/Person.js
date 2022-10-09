@@ -5,7 +5,7 @@ const Person = ({ person, remove }) => {
         <tr>
         <td>{person.name}</td>
         <td>{person.number}</td>
-        <td><button onClick={() => remove(person)} value={person}>delete</button></td>
+        <td><button onClick={remove} value={person.id}>delete</button></td>
         </tr>
       )
 }

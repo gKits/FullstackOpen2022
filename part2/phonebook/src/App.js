@@ -29,7 +29,8 @@ const App = () => {
       number: newNumber,
       id: persons.length + 1
     }
-    if (persons.find(person => person.name === personObject.name) === undefined){
+    const found = persons.find(person => person.name === personObject.name)
+    if (found === undefined){
       personService
       .create(personObject)
       .then(response => {
@@ -38,14 +39,18 @@ const App = () => {
       })
     }
     else {
-      alert(`${personObject.name} is already in the phonebook`)
+      if(window.confirm(`${personObject.name} already exists. Do you want to change their number from ${found.number} to ${personObject.number}`)) {
+        personObject.id = found.id
+        changeNumber(personObject)
+      }
     }
     setNewName('')
     setNewNumber('')
   }
 
-  const removePerson = (person) => {
-    console.log(person)
+  const removePerson = (event) => {
+    event.preventDefault()
+    const person = persons.find(person => person.id === parseInt(event.currentTarget.value))
     if (window.confirm(`Do you really want to delete ${person.name}`)) {
       personService
       .remove(person.id)
@@ -59,6 +64,18 @@ const App = () => {
         console.log(response)
       })
     }
+  }
+
+  const changeNumber = (personObject) => {
+    personService
+    .put(personObject.id, personObject)
+    .then(response => {
+      const copy = [...persons]
+      const index = copy.indexOf(copy.find(person => person.id === personObject.id))
+      copy[index] = personObject
+      setPersons(copy)
+      console.log(response)
+    })
   }
 
   const toShow = showAll
