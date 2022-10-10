@@ -4,6 +4,7 @@ import personService from './services/persons'
 import Phonebook from './components/Phonebook'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import Message from './components/Message'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [showAll, setShowAll] = useState(true)
+  const [message, setMessage] = useState({message: null, style: 'notification'})
 
   const hook = () => {
     personService
@@ -37,6 +39,10 @@ const App = () => {
         setPersons(persons.concat(personObject))
         console.log(response)
       })
+      setMessage({message: `${personObject.name} was added`, style: 'notification'})
+      setTimeout(() => {
+        setMessage({message: null, style: 'notification'})
+      }, 5000)
     }
     else {
       if(window.confirm(`${personObject.name} already exists. Do you want to change their number from ${found.number} to ${personObject.number}`)) {
@@ -61,7 +67,10 @@ const App = () => {
           copy.splice(index, 1)
           setPersons(copy)
         }
-        console.log(response)
+        setMessage({message: `${person.name} was removed`, style: 'notification'})
+        setTimeout(() => {
+          setMessage({message: null, style: 'notification'})
+        }, 5000)
       })
     }
   }
@@ -75,6 +84,22 @@ const App = () => {
       copy[index] = personObject
       setPersons(copy)
       console.log(response)
+      setMessage({message: `${personObject.name}'s number was changed`, style: 'notification'})
+      setTimeout(() => {
+        setMessage({message: null, style: 'notification'})
+      }, 5000)
+    })
+    .catch(error => {
+      const copy = [...persons]
+      const index = copy.indexOf(copy.find(p => p.id === personObject.id))
+      if (index > -1) {
+        copy.splice(index, 1)
+        setPersons(copy)
+      }
+      setMessage({message: `${personObject.name} was already removed`, style: 'error'})
+      setTimeout(() => {
+        setMessage({message: null, style: 'notification'})
+      }, 5000)
     })
   }
 
@@ -105,6 +130,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter filter={filter} filterHandler={handleFilterInput}/>
       <h3>New entry</h3>
+      <Message message={message.message} style={message.style}/>
       <PersonForm submitFunction={addPerson}
         nameInput={newName} nameInputHandler={handleNameInput}
         numberInput={newNumber} numberInputHandler={handleNumberInput}
